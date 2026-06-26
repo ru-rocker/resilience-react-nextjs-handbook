@@ -118,7 +118,8 @@ export async function fetchWithRetry(
         return response;
       }
 
-      const currentDelay = delay * Math.pow(backoff, attempt);
+      const maxBackoff = delay * Math.pow(backoff, attempt);
+      const currentDelay = Math.random() * maxBackoff;
       await new Promise((resolve) => setTimeout(resolve, currentDelay));
       attempt++;
     } catch (error: any) {
@@ -131,7 +132,8 @@ export async function fetchWithRetry(
         throw error;
       }
 
-      const currentDelay = delay * Math.pow(backoff, attempt);
+      const maxBackoff = delay * Math.pow(backoff, attempt);
+      const currentDelay = Math.random() * maxBackoff;
       await new Promise((resolve) => setTimeout(resolve, currentDelay));
       attempt++;
     }
