@@ -35,10 +35,14 @@ A **bulkhead** partitions resources so that one failing or noisy feature doesn't
 * *How it works*: We wrap search queries in `p-limit(2)`. This ensures that a maximum of **2 search requests** can run concurrently.
 * *Why*: OpenStreetMap Nominatim has strict usage policies. Limiting concurrency protects our client IP from being banned and prevents the browser from overloading the connection pool.
 
-### 4. Exponential Backoff Retries
-If the server is temporarily overloaded (responding with a `502 Bad Gateway` or timing out), retrying instantly can worsen the overload (like a thundering herd).
-* *How it works*: We retry failed requests up to 3 times, but we wait longer between each attempt ($300\text{ms} \rightarrow 600\text{ms} \rightarrow 1200\text{ms}$).
-* *Why*: Giving the server a moment to recover increases the chance that the retry will succeed.
+### 4. Exponential Backoff Retries & Jitter
+If the server is temporarily overloaded (responding with a `502 Bad Gateway` or timing out), retrying instantly can worsen the overload (known as the **thundering herd** problem).
+* **Exponential Backoff**: We wait longer on each failure (e.g., $300\text{ms} \rightarrow 600\text{ms} \rightarrow 1200\text{ms}$).
+* **Jitter (Randomness)**: We add random noise to the delay (so instead of exactly $600\text{ms}$, a client might wait $487\text{ms}$ or $550\text{ms}$).
+* *Why*: 
+  * Backoff gives the server time to recover.
+  * Jitter spreads retry attempts out over time, preventing thousands of browsers from hitting the server in synchronized waves.
+  * In our Axios geocoding client, this is handled automatically via `axiosRetry.exponentialDelay`. In custom fetch wrappers, we add it by multiplying the delay by a random factor (`Math.random()`).
 
 ---
 
