@@ -49,7 +49,7 @@ If the server is temporarily overloaded (responding with a `502 Bad Gateway` or 
 ## 💡 FAQ & Key Concepts
 
 ### Q1: Why do we have two types of fetch? (Vanilla vs. Axios)
-You will notice we use both native `fetch` (with a custom `fetchWithRetry` helper) and `axios` (with `axios-retry`). Here is why:
+You will notice we use both native `fetch` (with a custom `fetchWithRetry` helper) and `axios` (with `axios-retry`). We deliberately implemented both patterns as reference samples so you can choose the best approach for your specific project constraints:
 
 * **Axios (`searchLocations` / Geocoding)**:
   * We chose Axios for autocomplete searches because we wanted to plug in `axios-retry` natively, which has pre-built, robust exponential backoff.
